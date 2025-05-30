@@ -1,0 +1,460 @@
+getgenv().Image = "rbxthumb://type=Asset&id=76608011467652&w=420&h=420"
+getgenv().ToggleUI = "G"
+
+task.spawn(function()
+    if not getgenv().LoadedMobileUI then
+        getgenv().LoadedMobileUI = true
+        local OpenUI = Instance.new("ScreenGui")
+        local ImageButton = Instance.new("ImageButton")
+        local UICorner = Instance.new("UICorner")
+        local UIStroke = Instance.new("UIStroke")
+
+        OpenUI.Name = "OpenUI"
+        OpenUI.Parent = game:GetService("CoreGui")
+        OpenUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+        ImageButton.Parent = OpenUI
+        ImageButton.BackgroundColor3 = Color3.fromRGB(105, 105, 105)
+        ImageButton.BackgroundTransparency = 0.8
+        ImageButton.Position = UDim2.new(0, 5, 0, 5)
+        ImageButton.Size = UDim2.new(0, 55, 0, 55)
+        ImageButton.Image = getgenv().Image
+        ImageButton.Draggable = false
+        ImageButton.Transparency = 1
+
+        UICorner.CornerRadius = UDim.new(0.5, 0)
+        UICorner.Parent = ImageButton
+
+        UIStroke.Color = Color3.fromRGB(144, 238, 144)
+        UIStroke.Thickness = 2
+        UIStroke.Transparency = 0.1
+        UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        UIStroke.Parent = ImageButton
+
+        ImageButton.MouseButton1Click:Connect(function()
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, getgenv().ToggleUI, false, game)
+        end)
+    end
+end)
+
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+local Window = WindUI:CreateWindow({
+    Title = "Tool Hub",
+    Icon = "door-open",
+    Author = "Ziugpro",
+    Folder = "CloudHub",
+    Size = UDim2.fromOffset(500, 350),
+    Transparent = true,
+    Theme = "Dark",
+    User = {
+        Enabled = true,
+        Callback = function() print("clicked") end,
+        Anonymous = true
+    },
+    SideBarWidth = 140,
+    HasOutline = true,
+})
+local Tabs = {
+    Tab = Window:Tab({ Title = "Tab Play", Icon = "" }),
+    Farming = Window:Tab({ Title = "Tab Farming", Icon = "" }),
+    Teleport = Window:Tab({ Title = "Tab Teleport", Icon = "" }),
+
+}  
+Tabs.Tab:Toggle({
+    Title = "Esp Mob",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        if state then
+            for _, npc in pairs(workspace:GetDescendants()) do
+                if npc:IsA("Model") and npc:FindFirstChild("Head") and npc:FindFirstChild("Humanoid") and not game.Players:FindFirstChild(npc.Name) then
+                    if not npc.Head:FindFirstChild("ESPTag") then
+                        local billboardGui = Instance.new("BillboardGui")
+                        billboardGui.Name = "ESPTag"
+                        billboardGui.Adornee = npc.Head
+                        billboardGui.Parent = npc.Head
+                        billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                        billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+                        billboardGui.AlwaysOnTop = true
+
+                        local nameTag = Instance.new("TextLabel")
+                        nameTag.Parent = billboardGui
+                        nameTag.Text = npc.Name
+                        nameTag.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        nameTag.TextStrokeTransparency = 0.5
+                        nameTag.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                        nameTag.BackgroundTransparency = 1
+                        nameTag.Size = UDim2.new(1, 0, 1, 0)
+                        nameTag.Position = UDim2.new(0, 0, 0, 0)
+                        nameTag.TextScaled = true
+                        nameTag.Font = Enum.Font.SourceSansBold
+
+                        npc.Humanoid.Died:Connect(function()
+                            billboardGui:Destroy()
+                        end)
+                    end
+                end
+            end
+
+            workspace.ChildAdded:Connect(function(child)
+                if child:IsA("Model") and child:FindFirstChild("Head") and child:FindFirstChild("Humanoid") and not game.Players:FindFirstChild(child.Name) then
+                    if not child.Head:FindFirstChild("ESPTag") then
+                        local billboardGui = Instance.new("BillboardGui")
+                        billboardGui.Name = "ESPTag"
+                        billboardGui.Adornee = child.Head
+                        billboardGui.Parent = child.Head
+                        billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                        billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+                        billboardGui.AlwaysOnTop = true
+
+                        local nameTag = Instance.new("TextLabel")
+                        nameTag.Parent = billboardGui
+                        nameTag.Text = child.Name
+                        nameTag.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        nameTag.TextStrokeTransparency = 0.5
+                        nameTag.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                        nameTag.BackgroundTransparency = 1
+                        nameTag.Size = UDim2.new(1, 0, 1, 0)
+                        nameTag.Position = UDim2.new(0, 0, 0, 0)
+                        nameTag.TextScaled = true
+                        nameTag.Font = Enum.Font.SourceSansBold
+
+                        child.Humanoid.Died:Connect(function()
+                            billboardGui:Destroy()
+                        end)
+                    end
+                end
+            end)
+        else
+            for _, npc in pairs(workspace:GetDescendants()) do
+                if npc:IsA("Model") and npc:FindFirstChild("Head") then
+                    local esp = npc.Head:FindFirstChild("ESPTag")
+                    if esp then
+                        esp:Destroy()
+                    end
+                end
+            end
+        end
+    end
+})
+Tabs.Tab:Toggle({
+    Title = "Esp Players",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        if state then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                local char = player.Character
+                if char and char:FindFirstChild("Head") and not char.Head:FindFirstChild("ESPTag") then
+                    local billboardGui = Instance.new("BillboardGui")
+                    billboardGui.Name = "ESPTag"
+                    billboardGui.Adornee = char.Head
+                    billboardGui.Parent = char.Head
+                    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                    billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+                    billboardGui.AlwaysOnTop = true
+
+                    local nameTag = Instance.new("TextLabel")
+                    nameTag.Parent = billboardGui
+                    nameTag.Text = player.Name
+                    nameTag.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    nameTag.TextStrokeTransparency = 0.5
+                    nameTag.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                    nameTag.BackgroundTransparency = 1
+                    nameTag.Size = UDim2.new(1, 0, 1, 0)
+                    nameTag.TextScaled = true
+                    nameTag.Font = Enum.Font.SourceSansBold
+
+                    char.Humanoid.Died:Connect(function()
+                        billboardGui:Destroy()
+                    end)
+                end
+            end
+
+            game.Players.PlayerAdded:Connect(function(player)
+                player.CharacterAdded:Connect(function(char)
+                    if state and char:FindFirstChild("Head") and not char.Head:FindFirstChild("ESPTag") then
+                        local billboardGui = Instance.new("BillboardGui")
+                        billboardGui.Name = "ESPTag"
+                        billboardGui.Adornee = char.Head
+                        billboardGui.Parent = char.Head
+                        billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                        billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+                        billboardGui.AlwaysOnTop = true
+
+                        local nameTag = Instance.new("TextLabel")
+                        nameTag.Parent = billboardGui
+                        nameTag.Text = player.Name
+                        nameTag.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        nameTag.TextStrokeTransparency = 0.5
+                        nameTag.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                        nameTag.BackgroundTransparency = 1
+                        nameTag.Size = UDim2.new(1, 0, 1, 0)
+                        nameTag.TextScaled = true
+                        nameTag.Font = Enum.Font.SourceSansBold
+
+                        local humanoid = char:FindFirstChild("Humanoid")
+                        if humanoid then
+                            humanoid.Died:Connect(function()
+                                billboardGui:Destroy()
+                            end)
+                        end
+                    end
+                end)
+            end)
+        else
+            for _, player in pairs(game.Players:GetPlayers()) do
+                local char = player.Character
+                if char and char:FindFirstChild("Head") then
+                    local esp = char.Head:FindFirstChild("ESPTag")
+                    if esp then
+                        esp:Destroy()
+                    end
+                end
+            end
+        end
+    end
+})
+Tabs.Tab:Toggle({
+    Title = "Remove Shadow",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        if state then
+            workspace.Lighting.GlobalShadows = false
+            workspace.Lighting.OutdoorAmbient = Color3.new(1,1,1)
+            workspace.Lighting.FogEnd = 100000
+        else
+            workspace.Lighting.GlobalShadows = true
+            workspace.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+            workspace.Lighting.FogEnd = 1000
+        end
+    end
+})
+Tabs.Tab:Toggle({
+    Title = "Speed Camera",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        local cam = workspace.CurrentCamera
+        if state then
+            cam.FieldOfView = 100
+        else
+            cam.FieldOfView = 70
+        end
+    end
+})
+Tabs.Tab:Toggle({
+    Title = "Unlock Camera",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        local UserInputService = game:GetService("UserInputService")
+        local RunService = game:GetService("RunService")
+        local cam = workspace.CurrentCamera
+        local conn
+
+        if state then
+            conn = RunService.RenderStepped:Connect(function()
+                local delta = UserInputService:GetMouseDelta()
+                cam.CFrame = cam.CFrame * CFrame.Angles(0, math.rad(-delta.X * 0.3), 0)
+            end)
+        else
+            if conn then
+                conn:Disconnect()
+            end
+        end
+    end
+})
+Tabs.Tab:Toggle({
+    Title = "Noclip",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        local RunService = game:GetService("RunService")
+        local noclipConn
+        if state then
+            noclipConn = RunService.Stepped:Connect(function()
+                local char = game.Players.LocalPlayer.Character
+                if char then
+                    for _, part in pairs(char:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if noclipConn then
+                noclipConn:Disconnect()
+                noclipConn = nil
+            end
+        end
+    end
+})
+Tabs.Tab:Toggle({
+    Title = "Aimbot Mob",
+    Locked = false,
+    Value = false,
+    Callback = function(state)
+        local UserInputService = game:GetService("UserInputService")
+        local RunService = game:GetService("RunService")
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local mouse = LocalPlayer:GetMouse()
+        local circle
+        local aimbotConn
+        if state then
+            circle = Drawing.new("Circle")
+            circle.Color = Color3.fromRGB(255, 0, 0)
+            circle.Thickness = 2
+            circle.NumSides = 64
+            circle.Radius = 60
+            circle.Filled = false
+            circle.Visible = true
+
+            local function getClosestTarget()
+                local closestDist = math.huge
+                local closestPlayer = nil
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                        local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(player.Character.Head.Position)
+                        if onScreen then
+                            local dist = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+                            if dist < circle.Radius and dist < closestDist then
+                                closestDist = dist
+                                closestPlayer = player
+                            end
+                        end
+                    end
+                end
+                return closestPlayer
+            end
+
+            aimbotConn = RunService.RenderStepped:Connect(function()
+                circle.Position = Vector2.new(mouse.X, mouse.Y)
+            end)
+
+            UserInputService.InputBegan:Connect(function(input, gameProcessed)
+                if not gameProcessed and input.UserInputType == Enum.UserInputType.MouseButton2 then
+                    local target = getClosestTarget()
+                    if target and target.Character and target.Character:FindFirstChild("Head") then
+                        workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character.Head.Position)
+                    end
+                end
+            end)
+        else
+            if circle then
+                circle.Visible = false
+                circle:Remove()
+                circle = nil
+            end
+            if aimbotConn then
+                aimbotConn:Disconnect()
+                aimbotConn = nil
+            end
+        end
+    end
+})
+Tabs.Teleport:Button({
+    Title = "Teleport To Teslalab",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        local found = false
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Model") and v.Name:lower():find("teslalab") then
+                local part = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart", true)
+                if part then
+                    rootPart.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+                    found = true
+                    break
+                end
+            end
+        end
+
+        if not found then
+            warn("Không tìm thấy TeslaLab có chứa BasePart để teleport.")
+        end
+
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Model") and v.Name:lower():find("chair") then
+                local basePart = v:FindFirstChildWhichIsA("BasePart", true)
+                if basePart then
+                    local offset = rootPart.Position - basePart.Position - Vector3.new(0, basePart.Size.Y / 2 + rootPart.Size.Y / 2, 0)
+                    for _, part in pairs(v:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.Anchored = true
+                            part.CFrame = part.CFrame + offset
+                        end
+                    end
+                end
+            end
+        end
+    end
+})
+Tabs.Teleport:Button({
+    Title = "Teleport To Train",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        local found = false
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Model") and v.Name:lower():find("armor") then
+                local part = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart", true)
+                if part then
+                    rootPart.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+                    found = true
+                    break
+                end
+            end
+        end
+
+        if not found then
+            warn("Không tìm thấy TeslaLab có chứa BasePart để teleport.")
+        end
+    end
+})
+Tabs.Teleport:Button({
+    Title = "Teleport To End",
+    Desc = "",
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        local destination = Vector3.new(-428.74591064453125, 29.57289695739746, -49040.90625)
+        rootPart.CFrame = CFrame.new(destination + Vector3.new(0, 5, 0))
+    end
+})
+Tabs.Farming:Input({
+    Title = "Speed Tween",
+    Value = "2000",
+    Locked = false,
+    Placeholder = "",
+    Callback = function(input)
+    end
+})
+Tabs.Farming:Toggle({
+    Title = "Auto Load Script",
+    Locked = true,
+    Value = false,
+    Callback = function(state)
+    end
+})
+Tabs.Farming:Button({
+    Title = "Farm Bond",
+    Locked = true,
+    Callback = function()
+    end
+})
