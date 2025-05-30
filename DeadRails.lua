@@ -9,7 +9,7 @@ game.StarterGui:SetCore("SendNotification", {
     end
 })
 elseif game.PlaceId == 70876832253163 then
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ziugpro/DeadRails/refs/heads/main/Free_Script.luar"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ziugpro/DeadRails/refs/heads/main/Free_Script.lua"))()
 else
 print("Your Mom Gay")
 end
